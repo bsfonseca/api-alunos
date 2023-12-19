@@ -42,7 +42,19 @@ export class AlunoController {
                 where: {
                     id,
                 },
+                select: {
+                    id: true,
+                    nome: true,
+                    email: true,
+                },
             });
+
+            if (!aluno) {
+                return res.status(404).send({
+                    ok: false,
+                    message: "Aluno não encontrado",
+                });
+            }
 
             return res.status(200).send({
                 ok: true,
@@ -54,6 +66,39 @@ export class AlunoController {
                 ok: false,
                 message: error.toString(),
             });
+        }
+    }
+
+    public async deletarAluno(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+
+            const aluno = await repository.aluno.findUnique({
+                where: {
+                    id,
+                },
+            });
+
+            if (!aluno) {
+                return res.status(404).send({
+                    ok: false,
+                    message: "Aluno não encontrado",
+                });
+            }
+
+            await repository.aluno.delete({
+                where: {
+                    id,
+                },
+            });
+
+            return res.status(200).send({
+                ok: true,
+                message: "Aluno deletado com sucesso.",
+            });
+        } catch (error: any) {
+            return res.status(500).send({});
+            return res;
         }
     }
 }
