@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { Aluno } from "../models/aluno.model";
 import repository from "../database/prisma.repository";
+import { erroNaoEncontrado } from "../util/response.helper";
 
 export class AlunoController {
     public async criarAluno(req: Request, res: Response) {
@@ -33,7 +34,7 @@ export class AlunoController {
             });
         }
     }
-
+    //Obter um aluno pelo id
     public async obterAluno(req: Request, res: Response) {
         try {
             const { id } = req.params;
@@ -41,11 +42,6 @@ export class AlunoController {
             const aluno = await repository.aluno.findUnique({
                 where: {
                     id,
-                },
-                select: {
-                    id: true,
-                    nome: true,
-                    email: true,
                 },
             });
 
@@ -60,6 +56,57 @@ export class AlunoController {
                 ok: true,
                 message: "Usuário obtido com sucesso",
                 data: aluno,
+            });
+        } catch (error: any) {
+            return res.status(500).send({
+                ok: false,
+                message: error.toString(),
+            });
+        }
+    }
+
+    // PUT - atualizar um aluno
+    public async atualizarAluno(req: Request, res: Response) {
+        try {
+            // 1- Entrada
+            const { id } = req.params;
+            const { nome, idade } = req.body;
+
+            if (!nome && !idade) {
+                return res.status(400).send({
+                    ok: false,
+                    message: "Informe ao menos um campo para atualizar",
+                });
+            }
+
+            // 2- Processamento
+            // verificar se o aluno existe
+            const aluno = await repository.aluno.findUnique({
+                where: {
+                    id,
+                },
+            });
+
+            if (!aluno) {
+                return erroNaoEncontrado(res, "Aluno");
+            }
+
+            // atualizar os dados do aluno
+            const result = await repository.aluno.update({
+                where: {
+                    id,
+                },
+                data: {
+                    nome,
+                    idade,
+                },
+            });
+
+            // 3- Saída
+            return res.status(200).send({
+                ok: true,
+                message: "Aluno atualizado com sucesso",
+                data: result,
             });
         } catch (error: any) {
             return res.status(500).send({
@@ -97,8 +144,14 @@ export class AlunoController {
                 message: "Aluno deletado com sucesso.",
             });
         } catch (error: any) {
-            return res.status(500).send({});
-            return res;
+            return res.status(500).send({
+                ok: false,
+                message: error.toString(),
+            });
         }
+    }
+
+    public async listarAlunos(req: Request, res: Response) {
+        return res.status(200).send(await repository.aluno.findMany());
     }
 }
