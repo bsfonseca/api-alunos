@@ -150,7 +150,12 @@ export class AlunoController {
 
     public async listarAlunos(req: Request, res: Response) {
         try {
-            return res.status(200).send(await repository.aluno.findMany());
+            const result = await repository.aluno.findMany();
+            return res.status(200).send({
+                ok: true,
+                message: "Lista executada com sucesso",
+                data: result,
+            });
         } catch (error: any) {
             return erroServidor(res, error);
         }
