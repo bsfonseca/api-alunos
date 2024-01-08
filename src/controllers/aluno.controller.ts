@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Aluno } from "../models/aluno.model";
 import repository from "../database/prisma.repository";
-import { erroNaoEncontrado } from "../util/response.helper";
+import { erroNaoEncontrado, erroServidor } from "../util/response.helper";
 
 export class AlunoController {
     public async criarAluno(req: Request, res: Response) {
@@ -144,14 +144,15 @@ export class AlunoController {
                 message: "Aluno deletado com sucesso.",
             });
         } catch (error: any) {
-            return res.status(500).send({
-                ok: false,
-                message: error.toString(),
-            });
+            return erroServidor(res, error);
         }
     }
 
     public async listarAlunos(req: Request, res: Response) {
-        return res.status(200).send(await repository.aluno.findMany());
+        try {
+            return res.status(200).send(await repository.aluno.findMany());
+        } catch (error: any) {
+            return erroServidor(res, error);
+        }
     }
 }
