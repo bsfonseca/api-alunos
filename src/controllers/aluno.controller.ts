@@ -8,10 +8,10 @@ export class AlunoController {
         try {
             const { nome, email, senha, idade } = req.body;
 
-            if (!nome || !email || !senha) {
+            if (!nome) {
                 return res.status(400).send({
                     ok: false,
-                    message: "Os campos obrigatórios não foram informados",
+                    message: "Nome não informado",
                 });
             }
 
