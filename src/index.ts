@@ -1,33 +1,24 @@
 import express, { Request, Response } from "express";
-
-import { AlunoController } from "./controllers/aluno.controller";
-
-import { AvaliacaoController } from "./controllers/avaliacao.controller";
-import { AuthController } from "./controllers/auth.controller";
+import { LoginController } from "./controllers/login.controller";
+import { alunoRoutes } from "./routes/aluno.routes";
+import { avaliacaoRoutes } from "./routes/avaliacao.routes";
 
 const app = express();
 app.use(express.json());
 
 // Instâncias
-const alunoController = new AlunoController();
-const avaliacaoController = new AvaliacaoController();
-const authController = new AuthController();
+
+const loginController = new LoginController();
 
 // Rotas de aluno
-app.post("/aluno", alunoController.criarAluno);
-app.get("/aluno/:id", alunoController.obterAluno);
-app.get("/aluno", alunoController.listarAlunos);
-app.delete("/aluno/:id", alunoController.deletarAluno);
-app.put("/aluno/:id", alunoController.atualizarAluno);
+app.use("/aluno", alunoRoutes);
 
 // Rotas de avaliação
-app.post("/aluno/:id/avaliacao", avaliacaoController.criarAvaliacao);
-app.get("/aluno/:id/avaliacao", avaliacaoController.listarAvaliacoes);
-app.put("/aluno/:id/avaliacao/:idAvaliacao", avaliacaoController.atualizarAvaliacao);
+app.use("/avaliacao", avaliacaoRoutes);
 
 //Rotas de autenticação
-app.post("/login", authController.login);
+app.post("/login", loginController.login);
 
-app.listen(3333, () => {
+app.listen(3335, () => {
     console.log("Api está rodando");
 });
