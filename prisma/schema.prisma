@@ -10,12 +10,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TipoAluno {
+  M
+  T
+  F
+}
 
 model Aluno {
   id String @db.Uuid @id @default(uuid())
   nome String @db.VarChar(50)
   email String @db.VarChar(50) @unique
   senha String @db.VarChar(50)
+  tipo TipoAluno?
 
   token String?
 
