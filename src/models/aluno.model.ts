@@ -3,9 +3,13 @@ import { randomUUID } from "crypto";
 export class Aluno {
     public id: string;
 
-    constructor(public nome: string, public email: string, public senha: string, public idade?: number) {
+    constructor(
+        public nome: string,
+        public email: string,
+        public senha: string,
+        public tipo: string,
+        public idade?: number
+    ) {
         this.id = randomUUID();
     }
 }
-
-const daphne = new Aluno("Daphne", "teste@teste.com", "abc123");

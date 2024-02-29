@@ -2,23 +2,32 @@ import { Request, Response } from "express";
 import { Aluno } from "../models/aluno.model";
 import repository from "../database/prisma.repository";
 import { erroNaoEncontrado, erroServidor } from "../util/response.helper";
+import { Prisma, TipoAluno } from "@prisma/client";
 
 export class AlunoController {
     public async criarAluno(req: Request, res: Response) {
         try {
-            const { nome, email, senha, idade } = req.body;
+            const { nome, email, senha, idade, tipo } = req.body;
 
-            if (!nome) {
+            if (!nome || !email || !senha || !idade || !tipo) {
                 return res.status(400).send({
                     ok: false,
-                    message: "Nome não informado",
+                    message: "Preencha todos os campos",
                 });
             }
 
-            const aluno = new Aluno(nome, email, senha, idade);
+            const aluno = new Aluno(nome, email, senha, tipo, idade);
+
+            const dadosAluno: Prisma.AlunoCreateInput = {
+                nome: aluno.nome,
+                email: aluno.email,
+                senha: aluno.senha,
+                idade: aluno.idade,
+                tipo: aluno.tipo as TipoAluno,
+            };
 
             const result = await repository.aluno.create({
-                data: aluno,
+                data: dadosAluno,
             });
 
             // Saída
